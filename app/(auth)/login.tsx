@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+import { View, Text, TextInput, Button, StyleSheet, Pressable } from "react-native";
+import { router } from "expo-router";
 
 const LoginScreen: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -7,7 +8,7 @@ const LoginScreen: React.FC = () => {
 
     const handleLogin = () => {
         console.log("Login pressed:", { email, password });
-        // Later you can connect this with backend or Firebase
+        // Later connect with backend or Firebase
     };
 
     return (
@@ -31,6 +32,12 @@ const LoginScreen: React.FC = () => {
             />
 
             <Button title="Login" onPress={handleLogin} />
+
+            <Pressable style={styles.registerButton} onPress={() => router.push("/register")}>
+                <Text style={styles.registerText}>
+                    Don't have an account? Register
+                </Text>
+            </Pressable>
         </View>
     );
 };
@@ -46,5 +53,17 @@ const styles = StyleSheet.create({
         padding: 10,
         marginBottom: 12,
         borderRadius: 6,
+    },
+    registerButton: {
+        marginTop: 20,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        borderRadius: 6,
+        backgroundColor: "#f0f0f0",
+    },
+    registerText: {
+        color: "blue",
+        fontSize: 16,
+        textAlign: "center",
     },
 });
