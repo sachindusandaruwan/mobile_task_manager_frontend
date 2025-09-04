@@ -7,7 +7,8 @@ const LoginScreen: React.FC = () => {
     const [password, setPassword] = useState("");
 
     const handleLogin = () => {
-        console.log("Login pressed:", { email, password });
+        console.log("Login pressed:");
+        router.push("/(dashboard)/tasks/home")
         // Later connect with backend or Firebase
     };
 
@@ -35,7 +36,7 @@ const LoginScreen: React.FC = () => {
 
             <Pressable style={styles.registerButton} onPress={() => router.push("/register")}>
                 <Text style={styles.registerText}>
-                    Don't have an account? Register
+                    Do not have an account? Register
                 </Text>
             </Pressable>
         </View>
