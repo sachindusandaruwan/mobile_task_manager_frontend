@@ -8,7 +8,7 @@ const LoginScreen: React.FC = () => {
 
     const handleLogin = () => {
         console.log("Login pressed:");
-        router.push("/(dashboard)/tasks/home")
+        router.push("/(dashboard)/dashboardfooter")
         // Later connect with backend or Firebase
     };
 
