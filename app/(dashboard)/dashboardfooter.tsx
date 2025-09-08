@@ -1,77 +1,63 @@
-import {SafeAreaView} from "react-native";
-import {Tabs} from "expo-router";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import React from "react";
+import { View, Text, StyleSheet, FlatList } from "react-native";
+import { Calendar } from "react-native-calendars";
 
-const DashboardLayout=()=>{
+const DashboardLayout = () => {
+    // Hardcoded selected date
+    const selectedDate = "2025-09-08";
 
+    // Hardcoded tasks
+    const tasks = {
+        "2025-09-08": [
+            { id: "1", title: "Meeting with Boss" },
+            { id: "2", title: "Call Client" },
+        ],
+        "2025-09-10": [
+            { id: "3", title: "Project Review" },
+        ],
+    };
+
+    // Mark the dates
+    const markedDates: any = {
+        "2025-09-08": { marked: true, dotColor: "blue", selected: true, selectedColor: "#00adf5" },
+        "2025-09-10": { marked: true, dotColor: "blue" },
+    };
 
     return (
-        <SafeAreaView className="flex-1 bg-white">
-            <Tabs
-                screenOptions={{
-                    headerShown: false,
-                    tabBarActiveTintColor: "#2ecc71",
-                    tabBarInactiveTintColor: "#2c3e50",
-                    tabBarStyle: {
-                        backgroundColor: "#bdc3c7"
-                    }
-                }}
-            >
-                <Tabs.Screen
-                    name="home"
-                    options={{
-                        title: "Home",
-                        tabBarIcon: (data) => (
-                            <MaterialIcons
-                                name="home-filled"
-                                size={data.size}
-                                color={data.color}
-                            />
-                        )
-                    }}
+        <View style={styles.container}>
+            <Text style={styles.title}>awa magula</Text>
+
+            {/* Calendar */}
+            <Calendar markedDates={markedDates} />
+
+            {/* Tasks for selected date */}
+            <View style={styles.tasksContainer}>
+                <Text style={styles.tasksTitle}>Tasks for {selectedDate}</Text>
+                <FlatList
+                    data={tasks[selectedDate]}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => (
+                        <View style={styles.taskItem}>
+                            <Text>{item.title}</Text>
+                        </View>
+                    )}
                 />
-                <Tabs.Screen
-                    name="tasks"
-                    // name="tasks/index"
-                    options={{
-                        title: "Task",
-                        tabBarIcon: (data) => (
-                            <MaterialIcons
-                                name="check-circle"
-                                size={data.size}
-                                color={data.color}
-                            />
-                        )
-                    }}
-                />
-                <Tabs.Screen
-                    name="profile"
-                    options={{
-                        title: "Profile",
-                        tabBarIcon: (data) => (
-                            <MaterialIcons
-                                name="person"
-                                size={data.size}
-                                color={data.color}
-                            />
-                        )
-                    }}
-                />
-                <Tabs.Screen
-                    name="setting"
-                    options={{
-                        title: "Setting",
-                        tabBarIcon: (data) => (
-                            <MaterialIcons
-                                name="settings"
-                                size={data.size}
-                                color={data.color}
-                            />
-                        )
-                    }}
-                />
-            </Tabs>
-        </SafeAreaView>
-    )
-}
+            </View>
+        </View>
+    );
+};
+
 export default DashboardLayout;
+
+const styles = StyleSheet.create({
+    container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+    title: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
+    tasksContainer: { marginTop: 20 },
+    tasksTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
+    taskItem: {
+        backgroundColor: "#f0f0f0",
+        padding: 10,
+        marginBottom: 10,
+        borderRadius: 6,
+    },
+});

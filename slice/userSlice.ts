@@ -1,97 +1,104 @@
-import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import axios from "axios";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { AxiosError } from "axios";
+import setupApi from "../api/setupApi"; // ✅ use the shared axios instance
 
-const intializedState={
+// State typing
+interface UserState {
+    jwtToken: string | null;
+    refreshToken: string | null;
+    isAuthenticated: boolean;
+    isRegistered: boolean;
+    loading: boolean;
+    error: string | null;
+    userId: string;
+    name: string;
+    email: string;
+}
+
+const initialState: UserState = {
     jwtToken: null,
     refreshToken: null,
     isAuthenticated: false,
+    isRegistered: false,
     loading: false,
-    error: "",
+    error: null,
     userId: "",
     name: "",
     email: "",
-}
+};
 
-const api=axios.create({
-    baseURL: "http://localhost:3000",
-    headers: {
-        "Content-Type": "application/json",
-    },
-});
-
+// ✅ Async thunks
 export const loginUser = createAsyncThunk(
     "user/loginUser",
-    async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
+    async (
+        { email, password }: { email: string; password: string },
+        { rejectWithValue }
+    ) => {
         try {
-            const sendData =
-                {
-                    email: email,
-                    password: password
-                }
-            const response = await api.post("/user/signIn", sendData);
-            console.log(response.data);
+            console.log("loginUser called");
+            const response = await setupApi.post("/user/signIn", { email, password });
             return response.data;
+            console.log('loginUser response');
         } catch (error: any) {
-            return rejectWithValue(error.response?.data || "An error occurred");
+            return rejectWithValue(error.response?.data || "Login failed");
         }
     }
-)
+);
 
-export const registerUser=createAsyncThunk("user/registerUser",
-    async (userData: any)=>{
+export const registerUser = createAsyncThunk(
+    "user/registerUser",
+    async (userData: any, { rejectWithValue }) => {
         try {
-            alert("hii");
-            const response=await api.post("/user/register", userData);
-            alert(userData);
+            const response = await setupApi.post("/user/register", userData);
             return response.data;
-        }catch (error) {
-            console.log(error);
-
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Registration failed");
         }
+    }
+);
 
-    });
+export const refreshToken = createAsyncThunk(
+    "user/refreshToken",
+    async (refresh_token: string, { rejectWithValue }) => {
+        try {
+            const response = await setupApi.post(
+                "/auth/refresh-token",
+                null,
+                {
+                    headers: { Authorization: `Bearer ${refresh_token}` },
+                }
+            );
+            return response.data;
+        } catch (err) {
+            const error = err as AxiosError;
+            return rejectWithValue(error.response?.data || "Token refresh failed");
+        }
+    }
+);
 
-const userSlice=createSlice({
+// ✅ Slice
+const userSlice = createSlice({
     name: "user",
-    initialState: intializedState,
+    initialState,
     reducers: {
-        logoutUser: (state)=>{
-            state.jwtToken=null;
-            state.refreshToken=null;
-            state.isAuthenticated=false;
-            state.userId="";
-            state.name="";
-            state.email="";
-            console.log("User logged out");
+        logoutUser: (state) => {
+            state.jwtToken = null;
+            state.refreshToken = null;
+            state.isAuthenticated = false;
+            state.userId = "";
+            state.name = "";
+            state.email = "";
         },
     },
-    extraReducers(builder){
-        builder.addCase(registerUser.pending, (state)=>{
-            state.loading=true;
-        });
-        builder.addCase(registerUser.fulfilled, (state, {payload}:any)=>{
-            console.log("hiii : "+payload);
-            state.loading=false;
-            state.jwtToken=payload.accessToken;
-            state.refreshToken=payload.refreshToken;
-            state.isAuthenticated=true;
-            state.userId=payload._id;
-            state.name=payload.name;
-            state.email=payload.email;
-            alert("User registered successfully");
-        });
-
-        builder.addCase(registerUser.rejected, (state, {payload}:any)=>{
-            state.loading=false;
-            state.error=payload;
-            alert("User registration failed");
-        });
+    extraReducers: (builder) => {
         builder
-            .addCase(loginUser.pending, (state) => {
+            // Register user
+            .addCase(registerUser.pending, (state) => {
                 state.loading = true;
-                state.error = "";
             })
-            .addCase(loginUser.fulfilled, (state, { payload }:any) => {
+            .addCase(registerUser.fulfilled, (state, { payload }: any) => {
+                state.loading = false;
+                state.isRegistered = true;
                 state.jwtToken = payload.accessToken;
                 state.refreshToken = payload.refreshToken;
                 state.isAuthenticated = true;
@@ -99,12 +106,34 @@ const userSlice=createSlice({
                 state.name = payload.name;
                 state.email = payload.email;
             })
-            .addCase(loginUser.rejected, (state:any, { payload }) => {
+            .addCase(registerUser.rejected, (state, { payload }: any) => {
                 state.loading = false;
                 state.error = payload;
+            })
+            // Login user
+            .addCase(loginUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(loginUser.fulfilled, (state, { payload }: any) => {
+                state.loading = false;
+                state.jwtToken = payload.accessToken;
+                state.refreshToken = payload.refreshToken;
+                state.isAuthenticated = true;
+                state.userId = payload._id;
+                state.name = payload.name;
+                state.email = payload.email;
+            })
+            .addCase(loginUser.rejected, (state, { payload }: any) => {
+                state.loading = false;
+                state.error = payload;
+            })
+            // Refresh token
+            .addCase(refreshToken.fulfilled, (state, { payload }: any) => {
+                state.jwtToken = payload.accessToken; // ✅ update JWT on refresh
             });
-    }
+    },
 });
 
 export default userSlice.reducer;
-export const {logoutUser}=userSlice.actions;
+export const { logoutUser } = userSlice.actions;

@@ -1,13 +1,41 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { View, Text, TextInput, Button, StyleSheet, Pressable } from "react-native";
-import { router } from "expo-router";
+import {router, useRouter} from "expo-router";
+import {AppDispatch, RootState} from "@/store/store";
+import {useDispatch, useSelector} from "react-redux";
+import {loginUser} from "@/slice/userSlice";
 
 const LoginScreen: React.FC = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const dispatch = useDispatch<AppDispatch>();
+    const isAuthenticated = useSelector(
+        (state:RootState)=>state.userReducer.isAuthenticated
+    );
+
+
+    const router = useRouter();
+
+    useEffect(()=>{
+        if(isAuthenticated){
+            router.replace("../")
+        }
+    },[isAuthenticated,router]
+    )
+
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
 
     const handleLogin = () => {
+        alert("enawa")
         console.log("Login pressed:");
+
+        dispatch(loginUser({email, password}));
+        console.log(email , 'and' , password);
+
         router.push("/(dashboard)/dashboardfooter")
         // Later connect with backend or Firebase
     };
