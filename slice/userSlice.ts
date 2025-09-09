@@ -37,10 +37,17 @@ export const loginUser = createAsyncThunk(
         try {
             console.log("loginUser called");
             const response = await setupApi.post("/user/signIn", { email, password });
+            //console.log(response);
             return response.data;
             console.log('loginUser response');
-        } catch (error: any) {
-            return rejectWithValue(error.response?.data || "Login failed");
+        }  catch (err) {
+            const error = err as AxiosError;
+            console.log(error);
+            if (error.response && error.response.data) {
+                console.log(error.response.data);
+                return rejectWithValue(error.response.data);
+            }
+            return rejectWithValue('An unknown error occurred');
         }
     }
 );
