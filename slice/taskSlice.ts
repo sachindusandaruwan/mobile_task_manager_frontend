@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Task } from "../model/task";
 import axios from "axios";
+import setupApi from "@/api/setupApi";
 
 // Define initial state
 const initialTasks: Task[] = [];
@@ -16,11 +17,13 @@ const api = axios.create({
 export const getTasksByUserId = createAsyncThunk(
     "tasks/getTasksByUserId",
     async ({ userId, jwtToken }: { userId: string; jwtToken: string }) => {
-        const response = await api.get(`/task/getTaskByUser/${userId}`, {
+        console.log(jwtToken ," and jwt enawa",userId);
+        const response = await setupApi.get(`/task/getTaskByUser/${userId}`, {
             headers: {
                 Authorization: `Bearer ${jwtToken}`,
             },
         });
+        console.log(response);
         return response.data;
     }
 );
