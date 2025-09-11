@@ -21,7 +21,7 @@ const RegisterScreen = () => {
     useEffect(() => {
         if (isRegistered) {
             Alert.alert("Success", "Registration successful! Please login.");
-            router.replace("../login");
+            router.replace("/login");
         }
     }, [isRegistered]);
 

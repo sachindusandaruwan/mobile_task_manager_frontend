@@ -32,11 +32,14 @@ export const getTasksByUserId = createAsyncThunk(
 export const addTask = createAsyncThunk(
     "tasks/addTask",
     async ({ task, jwtToken }: { task: Task; jwtToken: string }, { dispatch }) => {
-        const response = await api.post("/task/add", task, {
+        const response = await setupApi.post("/task/add", task, {
             headers: {
                 Authorization: `Bearer ${jwtToken}`,
             },
         });
+        console.log("////////////////////////////////////////////////////////")
+        console.log(response);
+        console.log("////////////////////////////////////////////////////////")
 
         // After adding the task, fetch the tasks again to ensure the state is updated
         dispatch(getTasksByUserId({ userId: task.userId, jwtToken }));

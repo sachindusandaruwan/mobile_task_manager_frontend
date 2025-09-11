@@ -723,90 +723,387 @@
 
 
 
-import React, { useEffect } from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+// import React, { useEffect } from "react";
+// import { View, Text, StyleSheet, FlatList } from "react-native";
+// import { Calendar } from "react-native-calendars";
+// import { useDispatch, useSelector } from "react-redux";
+// import { AppDispatch, RootState } from "@/store/store";
+// import { getTasksByUserId } from "@/slice/taskSlice";
+// import { Task } from "@/model/task";
+//
+// const DashboardLayout = () => {
+//     const dispatch = useDispatch<AppDispatch>();
+//
+//     // ✅ Redux state
+//     const tasks = useSelector((state: RootState) => state.tasks);
+//     const { userId, jwtToken } = useSelector((state: RootState) => state.userReducer);
+//
+//     // ✅ Fetch tasks when component mounts
+//     useEffect(() => {
+//         if (userId && jwtToken) {
+//             console.log("userId ", userId ,"  ", jwtToken);
+//             dispatch(getTasksByUserId({ userId, jwtToken }));
+//         }
+//     }, [userId, jwtToken, dispatch]);
+//
+//     // ✅ Group tasks by date (YYYY-MM-DD from startDateTime)
+//     const groupedTasks: Record<string, Task[]> = tasks.reduce((acc, task) => {
+//         const date = task.startDateTime.split("T")[0];
+//         if (!acc[date]) acc[date] = [];
+//         acc[date].push(task);
+//         return acc;
+//     }, {} as Record<string, Task[]>);
+//
+//     // ✅ Mark calendar dates
+//     const markedDates: Record<string, any> = Object.keys(groupedTasks).reduce((acc, date) => {
+//         acc[date] = { marked: true, dotColor: "blue" };
+//         return acc;
+//     }, {} as Record<string, any>);
+//
+//     // ✅ Flatten tasks for FlatList
+//     const allTasks = Object.entries(groupedTasks).flatMap(([date, taskList]) =>
+//         taskList.map((task) => ({ ...task, date }))
+//     );
+//
+//     return (
+//         <View style={styles.container}>
+//             <Text style={styles.title}>📌 My Tasks</Text>
+//
+//             {/* Calendar */}
+//             <Calendar markedDates={markedDates} />
+//
+//             {/* All tasks */}
+//             <View style={styles.tasksContainer}>
+//                 <Text style={styles.tasksTitle}>All Tasks</Text>
+//                 <FlatList
+//                     data={allTasks}
+//                     keyExtractor={(item) => item._id}
+//                     renderItem={({ item }) => (
+//                         <View style={styles.taskItem}>
+//                             <Text style={styles.taskTitle}>{item.title}</Text>
+//                             <Text style={styles.taskDate}>📅 {item.date}</Text>
+//                             <Text style={styles.taskPlace}>📍 {item.place}</Text>
+//                             <Text style={styles.taskStatus}>✅ {item.status}</Text>
+//                         </View>
+//                     )}
+//                 />
+//             </View>
+//         </View>
+//     );
+// };
+//
+// export default DashboardLayout;
+//
+// const styles = StyleSheet.create({
+//     container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+//     title: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
+//     tasksContainer: { marginTop: 20, flex: 1 },
+//     tasksTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
+//     taskItem: {
+//         backgroundColor: "#f0f0f0",
+//         padding: 10,
+//         marginBottom: 10,
+//         borderRadius: 6,
+//     },
+//     taskTitle: { fontSize: 16, fontWeight: "600" },
+//     taskDate: { fontSize: 14, color: "gray" },
+//     taskPlace: { fontSize: 14, color: "black" },
+//     taskStatus: { fontSize: 14, color: "green" },
+// });
+
+
+// import React, { useEffect, useState } from "react";
+// import { View, Text, StyleSheet, FlatList } from "react-native";
+// import { Calendar } from "react-native-calendars";
+// import { useDispatch, useSelector } from "react-redux";
+// import { AppDispatch, RootState } from "@/store/store";
+// import { getTasksByUserId } from "@/slice/taskSlice";
+// import { Task } from "@/model/task";
+//
+// const DashboardLayout = () => {
+//     const dispatch = useDispatch<AppDispatch>();
+//
+//     // ✅ Redux state
+//     const tasks = useSelector((state: RootState) => state.tasks);
+//     const { userId, jwtToken } = useSelector((state: RootState) => state.userReducer);
+//
+//     // ✅ State for selected date
+//     const [selectedDate, setSelectedDate] = useState<string>("");
+//
+//     // ✅ Fetch tasks when component mounts
+//     useEffect(() => {
+//         if (userId && jwtToken) {
+//             dispatch(getTasksByUserId({ userId, jwtToken }));
+//         }
+//     }, [userId, jwtToken, dispatch]);
+//
+//     // ✅ Group tasks by date
+//     const groupedTasks: Record<string, Task[]> = tasks.reduce((acc, task) => {
+//         const date = task.startDateTime.split("T")[0];
+//         if (!acc[date]) acc[date] = [];
+//         acc[date].push(task);
+//         return acc;
+//     }, {} as Record<string, Task[]>);
+//
+//     // ✅ Mark dates in calendar (highlight selected too)
+//     const markedDates: Record<string, any> = Object.keys(groupedTasks).reduce((acc, date) => {
+//         acc[date] = { marked: true, dotColor: "blue" };
+//         return acc;
+//     }, {} as Record<string, any>);
+//
+//     if (selectedDate) {
+//         markedDates[selectedDate] = {
+//             ...(markedDates[selectedDate] || {}),
+//             selected: true,
+//             selectedColor: "orange",
+//         };
+//     }
+//
+//     // ✅ Filter tasks for selected date
+//     const filteredTasks = selectedDate ? groupedTasks[selectedDate] || [] : [];
+//
+//     return (
+//         <View style={styles.container}>
+//             <Text style={styles.title}>📌 My Tasks</Text>
+//
+//             {/* Calendar */}
+//             <Calendar
+//                 markedDates={markedDates}
+//                 onDayPress={(day) => setSelectedDate(day.dateString)}
+//             />
+//
+//             {/* Selected date tasks */}
+//             <View style={styles.tasksContainer}>
+//                 <Text style={styles.tasksTitle}>
+//                     {selectedDate ? `Tasks for ${selectedDate}` : "Select a date"}
+//                 </Text>
+//
+//                 <FlatList
+//                     data={filteredTasks}
+//                     keyExtractor={(item) => item._id}
+//                     renderItem={({ item }) => (
+//                         <View style={styles.taskItem}>
+//                             <Text style={styles.taskTitle}>{item.title}</Text>
+//                             <Text style={styles.taskDate}>📅 {item.startDateTime.split("T")[0]}</Text>
+//                             <Text style={styles.taskPlace}>📍 {item.place}</Text>
+//                             <Text style={styles.taskStatus}>✅ {item.status}</Text>
+//
+//                         </View>
+//                     )}
+//                     ListEmptyComponent={
+//                         selectedDate ? (
+//                             <Text style={{ textAlign: "center", marginTop: 20 }}>
+//                                 No tasks on this day
+//                             </Text>
+//                         ) : null
+//                     }
+//                 />
+//             </View>
+//         </View>
+//     );
+// };
+//
+// export default DashboardLayout;
+//
+// const styles = StyleSheet.create({
+//     container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+//     title: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
+//     tasksContainer: { marginTop: 20, flex: 1 },
+//     tasksTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
+//     taskItem: {
+//         backgroundColor: "#f0f0f0",
+//         padding: 10,
+//         marginBottom: 10,
+//         borderRadius: 6,
+//     },
+//     taskTitle: { fontSize: 16, fontWeight: "600" },
+//     taskDate: { fontSize: 14, color: "gray" },
+//     taskPlace: { fontSize: 14, color: "black" },
+//     taskStatus: { fontSize: 14, color: "green" },
+// });
+
+
+
+
+
+import { Task } from "@/model/task";
+import { getTasksByUserId } from "@/slice/taskSlice";
+import { AppDispatch, RootState } from "@/store/store";
+import { useRouter } from "expo-router"; // ✅ Import useRouter
+import React, { useEffect, useState } from "react";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Calendar } from "react-native-calendars";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/store/store";
-import { getTasksByUserId } from "@/slice/taskSlice";
-import { Task } from "@/model/task";
 
 const DashboardLayout = () => {
-    const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter(); // ✅ Use router
 
-    // ✅ Redux state
-    const tasks = useSelector((state: RootState) => state.tasks);
-    const { userId, jwtToken } = useSelector((state: RootState) => state.userReducer);
+  const tasks = useSelector((state: RootState) => state.tasks);
+  const { userId, jwtToken } = useSelector(
+    (state: RootState) => state.userReducer
+  );
 
-    // ✅ Fetch tasks when component mounts
-    useEffect(() => {
-        if (userId && jwtToken) {
-            console.log("userId ", userId ,"  ", jwtToken);
-            dispatch(getTasksByUserId({ userId, jwtToken }));
-        }
-    }, [userId, jwtToken, dispatch]);
+  const [selectedDate, setSelectedDate] = useState<string>("");
 
-    // ✅ Group tasks by date (YYYY-MM-DD from startDateTime)
-    const groupedTasks: Record<string, Task[]> = tasks.reduce((acc, task) => {
-        const date = task.startDateTime.split("T")[0];
-        if (!acc[date]) acc[date] = [];
-        acc[date].push(task);
-        return acc;
-    }, {} as Record<string, Task[]>);
+  useEffect(() => {
+    if (userId && jwtToken) {
+      console.log("Fetching tasks for userId:", userId);
+      dispatch(getTasksByUserId({ userId, jwtToken }));
+    }
+  }, [userId, jwtToken, dispatch]);
 
-    // ✅ Mark calendar dates
-    const markedDates: Record<string, any> = Object.keys(groupedTasks).reduce((acc, date) => {
-        acc[date] = { marked: true, dotColor: "blue" };
-        return acc;
-    }, {} as Record<string, any>);
+  // Debug: Log tasks when they change
+  useEffect(() => {
+    console.log("Tasks updated:", tasks);
+    console.log("Tasks length:", tasks.length);
+    if (tasks.length > 0) {
+      console.log("First task:", tasks[0]);
+    }
+  }, [tasks]);
 
-    // ✅ Flatten tasks for FlatList
-    const allTasks = Object.entries(groupedTasks).flatMap(([date, taskList]) =>
-        taskList.map((task) => ({ ...task, date }))
-    );
+  const groupedTasks: Record<string, Task[]> = tasks.reduce((acc, task) => {
+    // Add null check for startDateTime
+    if (!task.startDateTime) {
+      console.warn("Task missing startDateTime:", task);
+      return acc;
+    }
+    const date = task.startDateTime.split("T")[0];
+    if (!acc[date]) acc[date] = [];
+    acc[date].push(task);
+    return acc;
+  }, {} as Record<string, Task[]>);
 
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>📌 My Tasks</Text>
+  const markedDates: Record<string, any> = Object.keys(groupedTasks).reduce(
+    (acc, date) => {
+      acc[date] = { marked: true, dotColor: "blue" };
+      return acc;
+    },
+    {} as Record<string, any>
+  );
 
-            {/* Calendar */}
-            <Calendar markedDates={markedDates} />
+  if (selectedDate) {
+    markedDates[selectedDate] = {
+      ...(markedDates[selectedDate] || {}),
+      selected: true,
+      selectedColor: "orange",
+    };
+  }
 
-            {/* All tasks */}
-            <View style={styles.tasksContainer}>
-                <Text style={styles.tasksTitle}>All Tasks</Text>
-                <FlatList
-                    data={allTasks}
-                    keyExtractor={(item) => item._id}
-                    renderItem={({ item }) => (
-                        <View style={styles.taskItem}>
-                            <Text style={styles.taskTitle}>{item.title}</Text>
-                            <Text style={styles.taskDate}>📅 {item.date}</Text>
-                            <Text style={styles.taskPlace}>📍 {item.place}</Text>
-                            <Text style={styles.taskStatus}>✅ {item.status}</Text>
-                        </View>
-                    )}
-                />
+  const filteredTasks = selectedDate ? groupedTasks[selectedDate] || [] : [];
+
+  const formatTime = (dateTime: string) =>
+    new Date(dateTime).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>📌 My Tasks</Text>
+
+      {/* Add Task Button */}
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => router.push("/addPop")} // ✅ Open AddPop screen
+      >
+        <Text style={styles.addButtonText}>+ Add Task</Text>
+      </TouchableOpacity>
+
+      {/* Calendar */}
+      <Calendar
+        markedDates={markedDates}
+        onDayPress={(day) => setSelectedDate(day.dateString)}
+      />
+
+      {/* Selected date tasks */}
+      <View style={styles.tasksContainer}>
+        <Text style={styles.tasksTitle}>
+          {selectedDate ? `Tasks for ${selectedDate}` : "Select a date"}
+        </Text>
+
+        <FlatList
+          data={filteredTasks}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => (
+            <View style={styles.taskItem}>
+              <Text style={styles.taskTitle}>{item.title}</Text>
+              <Text style={styles.taskDate}>
+                📅{" "}
+                {item.startDateTime
+                  ? item.startDateTime.split("T")[0]
+                  : "No date"}
+              </Text>
+              <Text style={styles.taskTime}>
+                ⏰{" "}
+                {item.startDateTime
+                  ? formatTime(item.startDateTime)
+                  : "No start time"}{" "}
+                -{" "}
+                {item.endDateTime
+                  ? formatTime(item.endDateTime)
+                  : "No end time"}
+              </Text>
+              <Text style={styles.taskPlace}>
+                📍 {item.place || "No location"}
+              </Text>
+              <Text style={styles.taskStatus}>
+                ✅ {item.status || "No status"}
+              </Text>
             </View>
-        </View>
-    );
+          )}
+          ListEmptyComponent={
+            selectedDate ? (
+              <Text style={{ textAlign: "center", marginTop: 20 }}>
+                No tasks on this day
+              </Text>
+            ) : null
+          }
+        />
+      </View>
+    </View>
+  );
 };
 
 export default DashboardLayout;
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20, backgroundColor: "#fff" },
-    title: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
-    tasksContainer: { marginTop: 20, flex: 1 },
-    tasksTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
-    taskItem: {
-        backgroundColor: "#f0f0f0",
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 6,
-    },
-    taskTitle: { fontSize: 16, fontWeight: "600" },
-    taskDate: { fontSize: 14, color: "gray" },
-    taskPlace: { fontSize: 14, color: "black" },
-    taskStatus: { fontSize: 14, color: "green" },
+  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  addButton: {
+    backgroundColor: "#007bff",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginBottom: 15,
+  },
+  addButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  tasksContainer: { marginTop: 20, flex: 1 },
+  tasksTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
+  taskItem: {
+    backgroundColor: "#f0f0f0",
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 6,
+  },
+  taskTitle: { fontSize: 16, fontWeight: "600" },
+  taskDate: { fontSize: 14, color: "gray" },
+  taskTime: { fontSize: 14, color: "purple" },
+  taskPlace: { fontSize: 14, color: "black" },
+  taskStatus: { fontSize: 14, color: "green" },
 });

@@ -120,7 +120,7 @@ const LoginScreen: React.FC = () => {
     // ✅ Navigate only when login success
     useEffect(() => {
         if (isAuthenticated) {
-            router.replace("/(dashboard)/dashboardfooter");
+            router.replace("/dashboardfooter");
         }
     }, [isAuthenticated, router]);
 

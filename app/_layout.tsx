@@ -29,20 +29,60 @@
 // }
 
 
-import { Provider } from "react-redux";
-import { store } from "../store/store";
-import { Stack } from "expo-router";
-//import "../global.css";
 
-import { View, Text } from "react-native";
+
+
+//gpt eka denna kalin eka
+
+
+// import {Provider} from "react-redux";
+// import {store} from "@/store/store";
+// import {Stack} from "expo-router";
+//
+// export default function RootLayout() {
+//     return (
+//         <Provider store={store}>
+//             <Stack>
+//                 <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+//                 <Stack.Screen name="(dashboard)" options={{ headerShown: false }} />
+//                 <Stack.Screen name="(pops)" options={{ headerShown: false }} />
+//             </Stack>
+//         </Provider>
+//     );
+// }
+
+
+// import { Provider } from "react-redux";
+// import { store } from "@/store/store";
+// import { Slot, Stack } from "expo-router";
+// import React from "react";
+//
+// export default function RootLayout() {
+//     return (
+//         <Provider store={store}>
+//             <Stack screenOptions={{ headerShown: false }}>
+//                 {/* Slot renders child folders like (auth), (dashboard), or (pops) */}
+//                 <Slot />
+//             </Stack>
+//         </Provider>
+//     );
+// }
+
+
+import { Provider } from "react-redux";
+import { store } from "@/store/store";
+import { Slot } from "expo-router";
+import React from "react";
 
 export default function RootLayout() {
     return (
         <Provider store={store}>
-            <Stack>
-                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                <Stack.Screen name="(dashboard)" options={{ headerShown: false }} />
-            </Stack>
+            <Slot />
         </Provider>
     );
 }
+
+
+
+
+
