@@ -5,7 +5,7 @@ export default function NotFoundScreen() {
     return (
         <>
             <View className="flex-1 items-center justify-center p-5 bg-background">
-                <Text className="text-2xl font-semibold text-white">This screen does nott exist.</Text>
+                <Text className="text-2xl font-semibold text-white">This screen does not exist.</Text>
                 <Link href="../" asChild>
                     <Text className="mt-4 py-4 text-primary-light font-bold">Go to home screen!</Text>
                 </Link>

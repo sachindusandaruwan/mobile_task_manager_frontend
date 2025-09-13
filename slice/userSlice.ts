@@ -27,7 +27,7 @@ const initialState: UserState = {
     email: "",
 };
 
-// ✅ Async thunks
+//  Async thunks
 export const loginUser = createAsyncThunk(
     "user/loginUser",
     async (
@@ -83,7 +83,7 @@ export const refreshToken = createAsyncThunk(
     }
 );
 
-// ✅ Slice
+//  Slice
 const userSlice = createSlice({
     name: "user",
     initialState,
